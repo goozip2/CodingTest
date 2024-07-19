@@ -1,66 +1,65 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-	static int F;
-	static int G;
-	static int U;
-	static int D;
-
-	static int[] map;
+	static int topFloor;
+	static int startLinkFloor;
+	static int ganghoFloor;
+	static int[] button = new int[2];
 	static boolean[] visited;
+	static int[] building;
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Scanner scan = new Scanner(System.in);
-		F = scan.nextInt();
-		int S = scan.nextInt();
-		G = scan.nextInt();
-		U = scan.nextInt();
-		D = scan.nextInt();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		
+		topFloor = Integer.parseInt(st.nextToken())-1;
+		ganghoFloor = Integer.parseInt(st.nextToken())-1;
+		startLinkFloor = Integer.parseInt(st.nextToken())-1;
+		button[0] = Integer.parseInt(st.nextToken());
+		button[1] = - Integer.parseInt(st.nextToken());
+		visited = new boolean[topFloor+1];
+		building = new int[topFloor+1];
 		
-		if(S == G) {
-			System.out.println("0");
-			return;
-		}
-		
-
-		map = new int[F + 1];
-		visited = new boolean[F + 1];
-		visited[S] = true;
-
-		bfs(S);
-		if (map[G] == 0) {
+		int result = bfs();
+		if(result == -1) {
 			System.out.println("use the stairs");
-			return;
+		} else {
+			System.out.println(result);
 		}
-		System.out.println(map[G]);
-		return;
+		
 	}
-
-	public static void bfs(int x) {
+	
+	public static int bfs() {
+		if(ganghoFloor == startLinkFloor) {
+			return 0;
+		}
 		Queue<Integer> queue = new LinkedList<>();
-		queue.add(x);
-
-		while (!queue.isEmpty()) {
-			int now = queue.poll();
-			int next = now;
-			for (int i = 0; i < 2; i++) {
-				if (i == 0) {
-					next = now + U;
-				} else if (i == 1) {
-					next = now - D;
-				}
-				if (next < 1 || next > F || visited[next]) {
+		queue.add(ganghoFloor);
+		visited[ganghoFloor] = true;
+		while(!queue.isEmpty()) {
+			int nowFloor = queue.poll();
+			for(int i=0;i<2;i++) {
+				int nextFloor = nowFloor + button[i];
+				if(nextFloor<0 || nextFloor>topFloor) {
 					continue;
+				} else if (visited[nextFloor]==true) {
+					continue;
+				} else {
+					queue.add(nextFloor);
+					visited[nextFloor] = true;
+					building[nextFloor] = building[nowFloor]+1;
+					if(nextFloor == startLinkFloor) {
+						return building[nextFloor];
+					}
 				}
-				queue.add(next);
-				visited[next] = true;
-				map[next] = map[now] + 1;
 			}
 		}
+		return -1;
+		
 	}
 }
-//출발점과 도착점이 같은 경우에 0을 출력해줘야 하는 문제!!!
