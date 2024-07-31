@@ -1,68 +1,86 @@
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
- 
+
 public class Main {
- 
-	public static int MAX = Integer.MIN_VALUE;	// 최댓값 
-	public static int MIN = Integer.MAX_VALUE;	// 최솟값 
-	public static int[] operator = new int[4];	// 연산자 개수 
-	public static int[] number;					// 숫자 
-	public static int N;						// 숫자 개수 
- 
+
+	static int N;
+	static int[] numbers;
+	// [덧셈, 뺄셈, 곱셈, 나눗셈]
+	static int[] op = new int[4];
+	static int[] opUsed = new int[4];
+	
+	static int min = Integer.MAX_VALUE;
+	static int max = Integer.MIN_VALUE;
+	
 	public static void main(String[] args) throws IOException {
- 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
- 
+		// 숫자 개수 입력받기
 		N = Integer.parseInt(br.readLine());
-		number = new int[N];
- 
-		// 숫자 입력 
-		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-		for (int i = 0; i < N; i++) {
-			number[i] = Integer.parseInt(st.nextToken());
+		
+		// 숫자 입력받기
+		numbers = new int[N];
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for(int i=0;i<N;i++) {
+			numbers[i] = Integer.parseInt(st.nextToken());
 		}
- 
-		// 연산자 입력 
-		st = new StringTokenizer(br.readLine(), " ");
-		for (int i = 0; i < 4; i++) {
-			operator[i] = Integer.parseInt(st.nextToken());
+		
+		// 연산자 입력받기
+		st = new StringTokenizer(br.readLine());
+		for(int i=0;i<4;i++) {
+			op[i] = Integer.parseInt(st.nextToken());
 		}
- 
-		dfs(number[0], 1);
- 
-		System.out.println(MAX);
-		System.out.println(MIN);
- 
+		
+		// 지금까지 계산된 값 (초기값은 첫번째 숫자)
+		int pValue = numbers[0];
+		backTracking(1, pValue);
+		
+		
+		System.out.println(max);
+		System.out.println(min);
+	
 	}
- 
-	public static void dfs(int num, int idx) {
-		if (idx == N) {
-			MAX = Math.max(MAX, num);
-			MIN = Math.min(MIN, num);
+	
+	// index: 연산할 number 위치
+	// pValue: 현재까지 계산된 값
+	public static void backTracking(int index, int pValue) {
+		// 종료조건: index가 N & 모든 연산자 사용
+		if(index==N && op[0]==opUsed[0] && op[1]==opUsed[1] && op[2]==opUsed[2] && op[3]==opUsed[3]) {
+			if(pValue<min) {
+				min = pValue;
+			}
+			if(pValue>max) {
+				max = pValue;
+			}
 			return;
 		}
- 
-		for (int i = 0; i < 4; i++) {
-			// 연산자 개수가 1개 이상인 경우
-			if (operator[i] > 0) {
- 
-				// 해당 연산자를 1 감소시킨다.
-				operator[i]--;
- 
-				switch (i) {
- 
-				case 0:	dfs(num + number[idx], idx + 1);	break;
-				case 1:	dfs(num - number[idx], idx + 1);	break;
-				case 2:	dfs(num * number[idx], idx + 1);	break;
-				case 3:	dfs(num / number[idx], idx + 1);	break;
- 
+		
+		for(int o=0;o<4;o++) {
+			if(opUsed[o]<op[o]) {
+				opUsed[o]++;
+				switch(o) {
+					case 0:
+						backTracking(index+1, pValue + numbers[index]);
+						break;
+					case 1:
+						backTracking(index+1, pValue - numbers[index]);
+						break;
+					case 2:
+						backTracking(index+1, pValue * numbers[index]);
+						break;
+					case 3:
+						if(pValue<0) {
+							backTracking(index+1, -((-pValue) / numbers[index]));
+						} else {
+							backTracking(index+1, pValue / numbers[index]);
+						}
+						break;
 				}
-				// 재귀호출이 종료되면 다시 해당 연산자 개수를 복구한다.
-				operator[i]++;
+				opUsed[o]--;
 			}
 		}
+		
 	}
- 
+
 }
