@@ -1,27 +1,37 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
 
 	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		
+		int subjectNumber = 0;
+		double[] subjectArr;
+		double maxScore = 0;
+		double total = 0;
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int N = Integer.parseInt(br.readLine());
+		subjectNumber = Integer.parseInt(br.readLine());
 		
-		String[] sScore = br.readLine().split(" ");
+		subjectArr = new double[subjectNumber];
 		
-		int sum = 0;
-		int max = 0;
-		for(int i=0;i<N;i++) {
-			int x = Integer.parseInt(sScore[i]);
-			if(x>max) {
-				max = x;
-			}
-			sum += x;
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for(int i=0;i<subjectNumber;i++) {
+			subjectArr[i] = Integer.parseInt(st.nextToken());
 		}
 		
-		System.out.println((sum*100.0/max)/N);
+		Arrays.sort(subjectArr);
+		maxScore = subjectArr[subjectNumber-1];
+		for(int i=0;i<subjectNumber;i++) {
+			subjectArr[i] = subjectArr[i]/maxScore*100;
+			total += subjectArr[i];
+		}
+		
+		System.out.println(total/subjectNumber);
 	}
 
 }
