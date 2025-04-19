@@ -1,60 +1,47 @@
+
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
+// 완전 탐색 -> DFS -> 재귀
 public class Main {
+    static int result = 0;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+        int M = Integer.parseInt(br.readLine());
 
-	static int C;
-	static int R;
-	
-	static int[][] network;
-	static boolean[] visited;
-	
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		C = Integer.parseInt(br.readLine());
-		R = Integer.parseInt(br.readLine());
-		
-		visited = new boolean[C];
-		network = new int[C][C];
-		
-		for(int r=0;r<R;r++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			int s = Integer.parseInt(st.nextToken())-1;
-			int e = Integer.parseInt(st.nextToken())-1;
-			network[s][e] = 1;
-			network[e][s] = 1;
-		}
-		
-		int count = bfs();
-		System.out.println(count);
-	}
-	
-	static int bfs() {
-		int virusCount = 0;
-		Queue<Integer> queue = new LinkedList<>();
-		queue.add(0);
-		visited[0] = true;
-		
-		while(!queue.isEmpty()) {
-			int now = queue.poll();
-			for(int next=0;next<C;next++) {
-				if(network[now][next] == 1) {
-					if(next <0 || next>=C) {
-						continue;
-					}
-					if(visited[next] == true) {
-						continue;
-					}
-					queue.add(next);
-					virusCount++;
-					visited[next] = true;
-				}
-			}
-		}
-		return virusCount;
-	}
+        int[][] graph = new int[N][N];
+        for(int i=0;i<N;i++) {
+            Arrays.fill(graph[i], 0);
+        }
+
+        boolean[] visited = new boolean[N];
+        Arrays.fill(visited, false);
+
+        StringTokenizer st;
+        for(int i=0;i<M;i++) {
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken())-1;
+            int e = Integer.parseInt(st.nextToken())-1;
+            graph[s][e] = 1;
+            graph[e][s] = 1;
+        }
+
+        dfs(0,graph, visited);
+        System.out.println(result-1);
+    }
+
+    static void dfs(int node, int[][] graph, boolean[] visited) {
+        visited[node] = true;
+        result ++;
+        for(int i=0;i<graph.length;i++) {
+            if(graph[node][i] == 1 && !visited[i]) {
+                dfs(i, graph, visited);
+            }
+        }
+    }
 }
