@@ -1,23 +1,21 @@
-import java.util.*;
+import java.util.Arrays;
 
 class Solution {
     public int[] solution(int[] prices) {
-        int N = prices.length;
-        int[] answer = new int[N];
-        Deque<Integer> indexStack = new ArrayDeque<>();
+        int[] answer = new int[prices.length];
+        Arrays.fill(answer, 0);
 
-        for (int n = 0; n < N; n++) {
-            while (!indexStack.isEmpty() && prices[indexStack.peekFirst()] > prices[n]) {
-                int index = indexStack.pollFirst();
-                answer[index] = n - index;
+        for(int left = 0;left<prices.length-1;left++) {
+            int count = 0;
+            for (int right = left + 1; right < prices.length; right++) {
+                if (prices[left] <= prices[right]) {
+                    count++;
+                } else {
+                    count++;
+                    break;
+                }
             }
-            indexStack.offerFirst(n);
-
-        }
-
-        while(!indexStack.isEmpty()){
-            int index = indexStack.pollFirst();
-            answer[index] = N-1-index;
+            answer[left] = count;
         }
         return answer;
     }
